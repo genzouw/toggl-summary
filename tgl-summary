@@ -28,15 +28,15 @@ if (isset($argv[1])) {
     }
     $startDate = (new Carbon($argv[1]))->startOfDay();
 } else {
-    if (!preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/u', $argv[1])) {
-        echo "The second argument must be specified in YYYY-MM-DD format.", PHP_EOL;
-        exit(101);
-    }
     $addedMonths = -1;
     $startDate = Carbon::now()->addMonth($addedMonths)->startOfMonth();
 }
 
 if (isset($argv[2])) {
+    if (!preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/u', $argv[2])) {
+        echo "The second argument must be specified in YYYY-MM-DD format.", PHP_EOL;
+        exit(101);
+    }
     $endDate = (new Carbon($argv[2]))->endOfDay();
 } else {
     $endDate = Carbon::now()->endOfMonth();
