@@ -61,7 +61,14 @@ Ginq::from($timeEntries)
             (isset($it['duration']) ? ((float) $it['duration']) : 0.0) / (60 * 60),
             2
         );
-        $start = isset($it['start']) ? $it['start'] : '';
+
+        $start = '';
+        if (isset($it['start'])) {
+            $date = new Carbon($it['start']);
+            $date->setTimezone(date_default_timezone_get());
+            $start = $date->toIso8601String();
+        }
+
         $tags = isset($it['tags']) ? implode($it['tags'], ':') : '';
 
         echo "{$project['name']},{$description},{$duration},{$start},{$tags}", PHP_EOL;
