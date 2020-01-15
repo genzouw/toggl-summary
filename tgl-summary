@@ -42,10 +42,10 @@ if (isset($argv[2])) {
     $endDate = Carbon::now()->endOfMonth();
 }
 
-$timeEntries = $togglClient->getTimeEntries(array(
-    'start_date' => preg_replace('/\+0900$/su', '+09:00', $startDate->toIso8601String()),
-    'end_date' => preg_replace('/\+0900$/su', '+09:00', $endDate->toIso8601String()),
-));
+$timeEntries = $togglClient->getTimeEntries([
+    'start_date' => $startDate->toIso8601String(),
+    'end_date' => $endDate->toIso8601String(),
+]);
 
 echo 'project,description,duration,start,tags', PHP_EOL;
 Ginq::from($timeEntries)
