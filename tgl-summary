@@ -69,7 +69,7 @@ Ginq::from($timeEntries)
             $start = $date->toIso8601String();
         }
 
-        $tags = isset($it['tags']) ? implode($it['tags'], ':') : '';
+        $tags = isset($it['tags']) ? implode(':', $it['tags']) : '';
 
         echo "{$project['name']},{$description},{$duration},{$start},{$tags}", PHP_EOL;
     })
