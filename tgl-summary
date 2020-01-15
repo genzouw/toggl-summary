@@ -23,7 +23,7 @@ $projects = $togglClient->getProjects(array(
 
 if (isset($argv[1])) {
     if (!preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/u', $argv[1])) {
-        echo "The first argument must be specified in YYYY-MM-DD format.", PHP_EOL;
+        echo 'The first argument must be specified in YYYY-MM-DD format.', PHP_EOL;
         exit(101);
     }
     $startDate = (new Carbon($argv[1]))->startOfDay();
@@ -34,7 +34,7 @@ if (isset($argv[1])) {
 
 if (isset($argv[2])) {
     if (!preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/u', $argv[2])) {
-        echo "The second argument must be specified in YYYY-MM-DD format.", PHP_EOL;
+        echo 'The second argument must be specified in YYYY-MM-DD format.', PHP_EOL;
         exit(101);
     }
     $endDate = (new Carbon($argv[2]))->endOfDay();
