@@ -6,6 +6,8 @@ use AJT\Toggl\TogglClient;
 use Carbon\Carbon;
 use Ginq\Ginq;
 
+error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
+
 $apiToken = getenv('TOGGL_API_TOKEN');
 
 $togglClient = TogglClient::factory(array('api_key' => $apiToken));
@@ -17,9 +19,11 @@ foreach ($workspaces as $workspace) {
     $workspaceId = $workspace['id'];
 }
 
-$projects = $togglClient->getProjects(array(
-    'id' => $workspaceId,
-));
+$projects = $togglClient->getProjects(
+    array(
+      'id' => $workspaceId,
+    )
+);
 
 if (isset($argv[1])) {
     if (!preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/u', $argv[1])) {
@@ -42,35 +46,41 @@ if (isset($argv[2])) {
     $endDate = Carbon::now()->endOfMonth();
 }
 
-$timeEntries = $togglClient->getTimeEntries([
+$timeEntries = $togglClient->getTimeEntries(
+    [
     'start_date' => $startDate->toIso8601String(),
     'end_date' => $endDate->toIso8601String(),
-]);
+    ]
+);
 
 echo 'project,description,duration,start,tags', PHP_EOL;
 Ginq::from($timeEntries)
-    ->each(function ($it) use ($projects) {
-        $pid = isset($it['pid']) ? $it['pid'] : '';
+    ->each(
+        function ($it) use ($projects) {
+            $pid = isset($it['pid']) ? $it['pid'] : '';
 
-        $project = Ginq::from($projects)
-            ->firstOrElse(array('name' => ''), function (array $project) use ($pid) {
-                return $project['id'] === $pid;
-            });
-        $description = isset($it['description']) ? $it['description'] : '';
-        $duration = round(
-            (isset($it['duration']) ? ((float) $it['duration']) : 0.0) / (60 * 60),
-            2
-        );
+            $project = Ginq::from($projects)
+            ->firstOrElse(
+                array('name' => ''), function (array $project) use ($pid) {
+                    return $project['id'] === $pid;
+                }
+            );
+            $description = isset($it['description']) ? $it['description'] : '';
+            $duration = round(
+                (isset($it['duration']) ? ((float) $it['duration']) : 0.0) / (60 * 60),
+                2
+            );
 
-        $start = '';
-        if (isset($it['start'])) {
-            $date = new Carbon($it['start']);
-            $date->setTimezone(date_default_timezone_get());
-            $start = $date->toIso8601String();
+            $start = '';
+            if (isset($it['start'])) {
+                $date = new Carbon($it['start']);
+                $date->setTimezone(date_default_timezone_get());
+                $start = $date->toIso8601String();
+            }
+
+            $tags = isset($it['tags']) ? implode(':', $it['tags']) : '';
+
+            echo "{$project['name']},{$description},{$duration},{$start},{$tags}", PHP_EOL;
         }
-
-        $tags = isset($it['tags']) ? implode(':', $it['tags']) : '';
-
-        echo "{$project['name']},{$description},{$duration},{$start},{$tags}", PHP_EOL;
-    })
+    )
     ->toArray();
